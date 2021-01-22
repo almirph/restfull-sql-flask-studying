@@ -1,9 +1,9 @@
 from werkzeug.security import safe_str_cmp
-from user import User
+from model.UserModel import UserModel
 
 
 def authenticate(username, password):
-    user = User.find_by_username(username)
+    user = UserModel.find_by_username(username)
     if user and user.password == password:
         return user
 
