@@ -5,3 +5,4 @@ code/resource/__pycache__/UserResource.cpython-39.pyc
 code/model/__pycache__/ItemModel.cpython-39.pyc
 code/model/__pycache__/UserModel.cpython-39.pyc
 code/resource/__pycache__/ItemResource.cpython-39.pyc
+code/__pycache__/db.cpython-39.pyc

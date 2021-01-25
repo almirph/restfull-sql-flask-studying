@@ -19,26 +19,25 @@ class ItemResource(Resource):
     def post(self, name):
         data = ItemResource.parser.parse_args()
         item = ItemModel(name, data['price'])
-        item.insert_self()
+        item.save_to_db()
         return {'item': item.json()}, 201
 
     def delete(self, name):
         item = ItemModel.find_by_name(name)
-        if item == None:
-            return {'message': f'Item com o nome {name} não foi encontrado.'}, 404
-        item.delete_self()
-        return {'message': 'Item Deleted'}, 200
+        if item:
+            item.delete_from_db()
+        return {'message': 'item removido'}
 
     def put(self, name):
         data = ItemResource.parser.parse_args()
         item = ItemModel.find_by_name(name)
-        if item == None:
+        if item is None:
             return {'message': f'Item com nome {name} não existe'}, 404
-        item.update_self(data['price'])
+        item.price = data['price']
+        item.save_to_db()
         return {'item': item.json()}, 201
 
 
 class ItemsResource(Resource):
     def get(self):
-        items = ItemModel.find_all_dict()
-        return {'items': items}, 200
+        return {'items': [item.json() for item in ItemModel.query.all()]}, 200

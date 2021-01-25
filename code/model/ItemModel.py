@@ -1,7 +1,13 @@
 import sqlite3
+from db import db
 
 
-class ItemModel:
+class ItemModel(db.Model):
+    __tablename__ = 'items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+    price = db.Column(db.Float(2))
 
     def __init__(self, name, price):
         self.name = name
@@ -9,55 +15,15 @@ class ItemModel:
 
     @classmethod
     def find_by_name(cls, name):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        return cls.query.filter_by(name=name).first()
 
-        query = "SELECT * FROM items WHERE name=?"
-        result = cursor.execute(query, (name,))
-        row = result.fetchone()
-        if(row):
-            item = cls(*row)
-        else:
-            item = None
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
-        connection.close()
-        return item
-
-    @classmethod
-    def find_all_dict(cls):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "SELECT * FROM items"
-        result = cursor.execute(query)
-        items = []
-        for row in result:
-            items.append({'name': row[0], 'price': row[1]})
-        return items
-
-    def insert_self(self):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "INSERT INTO items VALUES (?, ?)"
-        cursor.execute(query, (self.name, self.price))
-        connection.commit()
-        connection.close()
-
-    def update_self(self, price):
-        self.price = price
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "UPDATE items SET price=? WHERE name=?"
-        cursor.execute(query, (self.price, self.name))
-        connection.commit()
-        connection.close()
-
-    def delete_self(self):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        query = "DELETE FROM items WHERE name =?"
-        cursor.execute(query, (self.name,))
-        connection.commit()
-        connection.close()
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def json(self):
         return {"name": self.name, "price": self.price}

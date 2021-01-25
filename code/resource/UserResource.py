@@ -22,7 +22,7 @@ class UserResource(Resource):
         if(UserModel.find_by_username(data['username'])):
             return {"message": "usuário já existe"}, 400
 
-        user = UserModel(None, data['username'], data['password'])
-        user.insert_self()
+        user = UserModel(**data)
+        user.save_to_db()
 
         return {"message": "User created successfully."}, 201
